@@ -1,0 +1,43 @@
+# kept in its own repo
+kitman/
+
+# raw footage and rendered video
+Screen Recordings/
+*.mp4
+
+# model weights (publish best.pt as a GitHub Release asset)
+*.pt
+
+# game frames (EA footage; dataset lives on Roboflow)
+*.jpg
+!docs/media/*.jpg
+dataset/frames/
+dataset/kickoff_frames/
+
+# generated output
+roles/out/
+homography/check_frames/
+homography/autolabel_out/
+eda/out/
+*.db
+*.log
+
+# presentation deck and its build scripts (kept private)
+presentation/
+
+# internal working notes
+football_camera_angle_evaluation_v3.md
+dataset/sampling/PLAN.md
+homography/FINDINGS.md
+
+# third-party papers
+Papers/
+
+# python / tools / OS
+__pycache__/
+*.pyc
+.claude/
+.impeccable/
+.vscode/
+.idea/
+Thumbs.db

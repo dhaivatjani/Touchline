@@ -1,0 +1,995 @@
+<style>
+.eda { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+.eda-head { display: grid; gap: var(--cds-gap-xs); }
+.eda-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.eda-take { color: var(--color-fg-muted); margin: 0; max-width: 72ch; line-height: 1.5; }
+.eda .eda-take b, .eda .eda-kpi b { font-weight: 500; color: var(--color-fg); }
+.eda-bar { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; justify-content: space-between; border-bottom: 1px solid var(--color-border-line); }
+.eda-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+.eda-tabs button { font: inherit; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-xs); color: var(--color-fg-muted); cursor: pointer; }
+.eda-tabs button[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+.eda-tabs button:focus-visible, .eda-pick select:focus-visible, .eda th button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.eda-pick { display: flex; gap: var(--cds-gap-xs); align-items: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding-block: var(--cds-pad-xs); }
+.eda-pick select { font: inherit; color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 2px var(--cds-pad-xs); }
+.eda-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-md); }
+.eda-kpi { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; align-content: start; }
+.eda-kpi .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.eda-kpi .v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+.eda-kpi .s { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.eda-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: var(--cds-gap-md); }
+.eda-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); position: relative; min-width: 0; display: grid; gap: var(--cds-gap-sm); align-content: start; }
+.eda-card.wide { grid-column: 1 / -1; }
+.eda-card h3 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.eda-card .note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.45; max-width: 80ch; }
+.eda-chart { position: relative; min-height: 220px; }
+.eda-chart svg { display: block; overflow: visible; }
+.eda-chart text { font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.eda-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.eda-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.eda-legend i, .eda-tip i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.eda-tip { position: absolute; z-index: 5; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; }
+.eda-tip .h { color: var(--cds-text-secondary); }
+.eda-tip .r { display: flex; gap: 6px; align-items: center; }
+.eda-tablewrap { max-height: 34rem; overflow: auto; }
+.eda table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.eda th { position: sticky; top: 0; background: var(--color-panel); text-align: right; font-weight: var(--cds-font-weight-medium); border-bottom: 1px solid var(--color-border-line); padding: 0; white-space: nowrap; }
+.eda th button { font: inherit; color: var(--color-fg-muted); background: none; border: 0; padding: var(--cds-pad-xs) var(--cds-pad-sm); cursor: pointer; width: 100%; text-align: inherit; }
+.eda th:first-child, .eda td:first-child, .eda th.l, .eda td.l { text-align: left; }
+.eda td { text-align: right; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.eda tbody tr { cursor: pointer; }
+.eda tbody tr:hover td { background: var(--cds-chart-grid); }
+.eda tbody tr.sel td { font-weight: var(--cds-font-weight-medium); }
+.eda-imgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--cds-gap-md); }
+.eda-imgs figure { margin: 0; display: grid; gap: var(--cds-gap-xs); }
+.eda-imgs img, .eda-sheet img { width: 100%; height: auto; border-radius: var(--cds-radius); display: block; }
+.eda figcaption { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.eda-spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--cds-gap-sm) var(--cds-gap-lg); margin: 0; }
+.eda-spec div { display: grid; gap: 2px; min-width: 0; }
+.eda-spec dt { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.eda-spec dd { margin: 0; font-variant-numeric: tabular-nums; line-height: 1.4; }
+.eda ul.find { margin: 0; padding-left: 1.2em; display: grid; gap: var(--cds-gap-xs); line-height: 1.5; max-width: 80ch; }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.eda-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 200px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.eda-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="eda">
+  <header class="eda-head" id="top">
+    <h1>FC Mobile recordings EDA</h1>
+    <p class="eda-take dash-skeleton" data-source="totals">
+      <b data-source="totals" data-field="videos">—</b> screen recordings from <b data-source="totals" data-field="sessions">—</b> sessions,
+      <b data-source="totals" data-field="hours">—</b> h and <b data-source="totals" data-field="gb">—</b> GB of 2400×1080 H.264.
+      The frame rate is variable (per-video mean <b data-source="totals" data-field="fps_min">—</b> to <b data-source="totals" data-field="fps_max">—</b> fps, with short bursts near 60),
+      so frames must be sampled by timestamp. <b data-source="totals" data-field="live_pct">—</b>% of the footage is live play under the broadcast camera; the rest is replays, cutscenes and menus.
+    </p>
+  </header>
+
+  <div class="eda-bar">
+    <nav class="eda-tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tab-overview" data-page="overview">Overview</button>
+      <button role="tab" id="tab-timing" data-page="timing">Frame timing</button>
+      <button role="tab" id="tab-picture" data-page="picture">Picture</button>
+      <button role="tab" id="tab-state" data-page="state">Game state</button>
+      <button role="tab" id="tab-motion" data-page="motion">Motion</button>
+      <button role="tab" id="tab-objects" data-page="objects">Objects</button>
+      <button role="tab" id="tab-samples" data-page="samples">Samples</button>
+    </nav>
+    <label class="eda-pick" for="eda-match">Match <select id="eda-match" data-source="videos"></select></label>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="eda-page" id="overview" data-page="overview">
+    <div class="eda" style="gap: var(--cds-gap-md)">
+      <div class="eda-kpis">
+        <div class="eda-kpi"><span class="k">Recordings</span><span class="v" data-source="totals" data-field="videos">—</span><span class="s">train <span data-source="totals" data-field="n_train">—</span> · val <span data-source="totals" data-field="n_val">—</span> · test <span data-source="totals" data-field="n_test">—</span>, split by match</span></div>
+        <div class="eda-kpi"><span class="k">Footage</span><span class="v"><span data-source="totals" data-field="hours">—</span> h</span><span class="s"><span data-source="totals" data-field="gb">—</span> GB on disk</span></div>
+        <div class="eda-kpi"><span class="k">Encoded frames</span><span class="v" data-source="totals" data-field="frames_k">—</span><span class="s">thousand, variable rate</span></div>
+        <div class="eda-kpi"><span class="k">Live play</span><span class="v"><span data-source="totals" data-field="live_pct">—</span>%</span><span class="s"><span data-source="totals" data-field="live_hours">—</span> h usable for the detector</span></div>
+        <div class="eda-kpi"><span class="k">Stalls over 0.5 s</span><span class="v" data-source="totals" data-field="stalls_500">—</span><span class="s"><span data-source="totals" data-field="stalled_s">—</span> s with no new frame</span></div>
+        <div class="eda-kpi"><span class="k">Ball visible</span><span class="v"><span data-source="totals" data-field="ball_pct">—</span>%</span><span class="s">of live frames, median <span data-source="totals" data-field="ball_px">—</span> px</span></div>
+      </div>
+
+      <div class="eda-card wide" id="format">
+        <h3>Recording format and device</h3>
+        <p class="note">From each file's container and stream metadata (ffprobe). <span data-source="format" data-field="n_formats">—</span> distinct format across <span data-source="format" data-field="n_files">—</span> files, so the values below hold for every recording.</p>
+        <dl class="eda-spec">
+          <div><dt>Frame size</dt><dd><span data-source="format" data-field="width">—</span> × <span data-source="format" data-field="height">—</span> px, landscape</dd></div>
+          <div><dt>Aspect ratio</dt><dd data-source="format" data-field="aspect">—</dd></div>
+          <div><dt>Megapixels per frame</dt><dd data-source="format" data-field="megapixels">—</dd></div>
+          <div><dt>Video codec</dt><dd><span data-source="format" data-field="vcodec">—</span>, <span data-source="format" data-field="profile">—</span> profile</dd></div>
+          <div><dt>Pixel format</dt><dd><span data-source="format" data-field="pix_fmt">—</span>, <span data-source="format" data-field="color_range">—</span> range, <span data-source="format" data-field="color_space">—</span></dd></div>
+          <div><dt>Video bitrate</dt><dd><span data-source="format" data-field="mbps_min">—</span> to <span data-source="format" data-field="mbps_max">—</span> Mbit/s</dd></div>
+          <div><dt>Audio</dt><dd><span data-source="format" data-field="acodec">—</span>, <span data-source="format" data-field="sample_khz">—</span> kHz, <span data-source="format" data-field="channels">—</span> channels</dd></div>
+          <div><dt>Device OS</dt><dd>Android <span data-source="format" data-field="android">—</span></dd></div>
+          <div><dt>Device model</dt><dd>Not stored in the files. The file names follow Samsung's screen-recorder pattern, so most likely a Samsung Galaxy; one phone for all recordings.</dd></div>
+        </dl>
+      </div>
+
+      <div class="eda-card wide" id="findings">
+        <h3>What this means for the detector dataset</h3>
+        <ul class="find" data-source="totals">
+          <li>Every file shares one format (2400×1080, yuv420p, H.264 Main, AAC 48 kHz stereo, median <b data-source="totals" data-field="mbps">—</b> Mbit/s), so no per-file preprocessing is needed beyond decoding.</li>
+          <li>Frame rate swings from about <b data-source="totals" data-field="fps_p05_min">—</b> to <b data-source="totals" data-field="fps_p95_max">—</b> fps inside one file, with <b data-source="totals" data-field="stalls_500">—</b> freezes longer than 0.5 s. Frame indices are not a clock: sample, split and track by timestamp, and expect a tracker to see uneven time steps.</li>
+          <li>Players are small: the median on-pitch person box is <b data-source="totals" data-field="person_h">—</b> px tall and the ball about <b data-source="totals" data-field="ball_px">—</b> px across at 1080p. Train at high input size (1280 to 1920) and keep small-object augmentation gentle.</li>
+          <li>The pretrained COCO model finds <b data-source="totals" data-field="persons">—</b> on-pitch people per live frame on average, against 22 players plus officials on the pitch, and sees the ball in only <b data-source="totals" data-field="ball_pct">—</b>% of live frames. The ball is the class that most needs labelled data.</li>
+          <li>Sharpness splits the recordings into two groups: <b data-source="totals" data-field="sharp_matches">—</b> measure a median Laplacian variance of <b data-source="totals" data-field="sharp_hi">—</b> in live play, the rest about <b data-source="totals" data-field="sharp_lo">—</b>. That points to a different in-game graphics or recording setting on those days; check that the val and test matches cover both groups.</li>
+          <li>Replays, cutscenes and menus take <b data-source="totals" data-field="nonlive_pct">—</b>% of the time. The score-panel test separates them cleanly, so keep filtering them out before sampling.</li>
+        </ul>
+      </div>
+
+      <div class="eda-card wide" id="video-table">
+        <h3>Per-recording summary</h3>
+        <p class="note">One row per match. Live-play columns use only samples where the score panel and grass are visible. Click a row to pick that match for the other tabs; click a header to sort.</p>
+        <div class="eda-tablewrap">
+          <table data-source="videos" data-row-key="match_id">
+            <thead><tr>
+              <th data-field="match_id"><button>Match</button></th>
+              <th class="l" data-field="session"><button>Session</button></th>
+              <th class="l" data-field="split"><button>Split</button></th>
+              <th data-field="minutes"><button>Minutes</button></th>
+              <th data-field="size_mb"><button>MB</button></th>
+              <th data-field="video_bitrate_mbps"><button>Mbit/s</button></th>
+              <th data-field="fps_mean"><button>Mean fps</button></th>
+              <th data-field="fps_p05"><button>fps p5</button></th>
+              <th data-field="gaps_over_500ms"><button>Stalls &gt;0.5 s</button></th>
+              <th data-field="gop_s_median"><button>GOP s</button></th>
+              <th data-field="share_live"><button>Live</button></th>
+              <th data-field="cuts_per_min"><button>Cuts/min</button></th>
+              <th data-field="sharpness_live"><button>Sharpness</button></th>
+              <th data-field="persons_per_frame_live"><button>People/frame</button></th>
+              <th data-field="ball_visible_live"><button>Ball seen</button></th>
+              <th data-field="person_h_px_median"><button>Person px</button></th>
+              <th data-field="mean_volume_db"><button>Audio dB</button></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMING -->
+  <section class="eda-page" id="timing" data-page="timing" hidden>
+    <div class="eda-grid">
+      <div class="eda-card" id="fps-time">
+        <h3>Time spent at each frame rate</h3>
+        <p class="note">Share of wall-clock time by instantaneous frame rate (1 / gap to the next frame). All matches, weighted by length; the picked match is drawn as a line.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="fps_time"></div>
+      </div>
+      <div class="eda-card" id="fps-range">
+        <h3>Frame rate per recording</h3>
+        <p class="note">Bar spans the 5th to 95th percentile of instantaneous fps; the tick is the mean frame rate. Colour is the split.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+      <div class="eda-card wide" id="fps-second">
+        <h3>Frames delivered each second, picked match</h3>
+        <p class="note">Dips to zero are freezes in the recording (the game or the recorder stalled). Dashed line: 30 fps.</p>
+        <div class="eda-chart c" data-source="per_second" style="min-height:200px"></div>
+      </div>
+      <div class="eda-card wide" id="mbps-second">
+        <h3>Bitrate each second, picked match</h3>
+        <p class="note">Mbit per second of video. Spikes follow keyframes and fast camera pans; troughs are static menus and stalls.</p>
+        <div class="eda-chart c" data-source="per_second" style="min-height:180px"></div>
+      </div>
+      <div class="eda-card" id="stalls">
+        <h3>Freezes per recording</h3>
+        <p class="note">Total time inside gaps longer than 100 ms between frames.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+      <div class="eda-card" id="encode">
+        <h3>Frame size by type</h3>
+        <p class="note">Mean compressed size of keyframes and of the frames between them, in KB. One keyframe every few seconds (GOP column in the overview table).</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PICTURE -->
+  <section class="eda-page" id="picture" data-page="picture" hidden>
+    <div class="eda-grid">
+      <div class="eda-card wide" id="pic-range">
+        <h3>Image statistics per recording, live play</h3>
+        <p class="note">Box spans the 25th to 75th percentile of the sampled frames, whiskers the 10th to 90th, tick the median. Sharpness is the variance of the Laplacian on the centre of the full-resolution frame; luma, contrast and saturation are on a 0 to 255 scale.</p>
+        <label class="eda-pick" for="eda-metric">Measure <select id="eda-metric">
+          <option value="luma">Brightness (mean luma)</option>
+          <option value="contrast">Contrast (luma std)</option>
+          <option value="saturation">Saturation (mean HSV S)</option>
+          <option value="colourfulness">Colourfulness (Hasler–Süsstrunk)</option>
+          <option value="sharpness">Sharpness (Laplacian variance)</option>
+          <option value="entropy">Entropy (bits)</option>
+          <option value="green_frac">Grass share of frame</option>
+        </select></label>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card" id="pic-state">
+        <h3>Same measure by game state</h3>
+        <p class="note">Distribution over all sampled frames, as a share of each state's samples.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card" id="hue">
+        <h3>Colour distribution by split</h3>
+        <p class="note">Hue of saturated pixels (S &gt; 40). The grass peak near 100° dominates; the strip under the axis shows each hue. Train, val and test overlap, so the splits are not separated by colour.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="hue"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATE -->
+  <section class="eda-page" id="state" data-page="state" hidden>
+    <div class="eda-grid">
+      <div class="eda-card wide" id="state-timeline">
+        <h3>What is on screen over time</h3>
+        <p class="note">Every recording, sampled twice a second. Live play shows the score panel over grass; replays and cutscenes show grass without the panel; other is menus, lineups and celebration screens; black is a fade.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card" id="state-share">
+        <h3>Share of time by state</h3>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+      <div class="eda-card" id="cuts">
+        <h3>Scene cuts per minute</h3>
+        <p class="note">A cut is a drop in colour-histogram correlation below 0.6 between samples 0.5 s apart: camera switches into and out of replays, menus and celebrations.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MOTION -->
+  <section class="eda-page" id="motion" data-page="motion" hidden>
+    <div class="eda-grid">
+      <div class="eda-card" id="pan-dx">
+        <h3>Horizontal camera pan, live play</h3>
+        <p class="note">Median optical-flow shift between samples 0.5 s apart, in full-resolution pixels. The broadcast camera follows the ball left and right; vertical movement is small.</p>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card" id="pan-speed">
+        <h3>Camera speed per recording</h3>
+        <p class="note">Median flow magnitude per 0.5 s, live play. Box 25th to 75th percentile, whiskers 10th to 90th.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card wide" id="mad-state">
+        <h3>Frame-to-frame change by state</h3>
+        <p class="note">Mean absolute grey-level difference between samples 0.5 s apart. Near-zero values in live play are pauses (set pieces, the game waiting), which give near-duplicate frames.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBJECTS -->
+  <section class="eda-page" id="objects" data-page="objects" hidden>
+    <div class="eda-grid">
+      <div class="eda-card" id="persons-hist">
+        <h3>People on the pitch per frame</h3>
+        <p class="note">Pretrained YOLO11m (COCO person, confidence ≥ 0.30, feet on the grass), one live frame per second. A full view would hold 22 players and up to 3 officials; the camera shows part of the pitch.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="samples"></div>
+      </div>
+      <div class="eda-card" id="ball-seen">
+        <h3>Ball found per recording</h3>
+        <p class="note">Share of live frames with at least one COCO sports ball (confidence ≥ 0.15) on the pitch.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="videos"></div>
+      </div>
+      <div class="eda-card" id="person-size">
+        <h3>Person box height</h3>
+        <p class="note">Pixels at 1080p, share of each split's boxes. Most players are under 100 px.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="box_sizes"></div>
+      </div>
+      <div class="eda-card" id="ball-size">
+        <h3>Ball size</h3>
+        <p class="note">Square root of the box area, pixels at 1080p.</p>
+        <div class="eda-legend lg"></div>
+        <div class="eda-chart c" data-source="box_sizes"></div>
+      </div>
+      <div class="eda-card" id="heat-person">
+        <h3>Where people appear</h3>
+        <p class="note">Box centres over the 2400×1080 screen, all matches. The top strip is the HUD.</p>
+        <div class="eda-chart c" data-source="heatmap" style="min-height:120px"></div>
+      </div>
+      <div class="eda-card" id="heat-ball">
+        <h3>Where the ball appears</h3>
+        <p class="note">The camera keeps the ball near the middle band of the screen.</p>
+        <div class="eda-chart c" data-source="heatmap" style="min-height:120px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SAMPLES -->
+  <section class="eda-page" id="samples" data-page="samples" hidden>
+    <div class="eda-grid">
+      <div class="eda-card wide" id="sheet">
+        <h3>Contact sheet, picked match</h3>
+        <p class="note">Twelve frames spread evenly across the recording.</p>
+        <div class="eda-sheet"></div>
+      </div>
+      <div class="eda-card wide" id="meanstd">
+        <h3>Mean and variation image, picked match</h3>
+        <p class="note">Left: the average of every sampled frame. Right: per-pixel standard deviation (dark = never changes). The dark score panel, timer and control buttons are fixed HUD regions; mask or ignore them when training and evaluating.</p>
+        <div class="eda-imgs"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="img_M01.js"></script><script src="img_M02.js"></script><script src="img_M03.js"></script><script src="img_M04.js"></script><script src="img_M05.js"></script>
+<script src="img_M06.js"></script><script src="img_M07.js"></script><script src="img_M08.js"></script><script src="img_M09.js"></script><script src="img_M10.js"></script>
+<script src="img_M11.js"></script><script src="img_M12.js"></script><script src="img_M13.js"></script><script src="img_M14.js"></script><script src="img_M15.js"></script>
+<script src="img_M16.js"></script><script src="img_M17.js"></script><script src="img_M18.js"></script><script src="img_M19.js"></script><script src="img_M20.js"></script>
+
+<script>
+dash.calc('totals', {
+  inputs: ['videos'],
+  title: 'Dataset totals',
+  description: 'Sums, means and extremes over all recordings, in the units the page shows.',
+  fn: (videos) => {
+    const v = (r, f) => Number(r[f]);
+    const sum = (f) => videos.reduce((a, r) => a + v(r, f), 0);
+    const col = (f) => videos.map((r) => v(r, f)).sort((a, b) => a - b);
+    const med = (f) => { const c = col(f); const m = c.length >> 1; return c.length % 2 ? c[m] : (c[m - 1] + c[m]) / 2; };
+    const mean = (f) => sum(f) / videos.length;
+    const r1 = (x) => Math.round(x * 10) / 10;
+    const live = sum('live_minutes') / sum('minutes');
+    return [{
+      videos: videos.length,
+      sessions: new Set(videos.map((r) => r.session)).size,
+      hours: Math.round(sum('duration_s') / 36) / 100,
+      gb: r1(sum('size_mb') / 1024),
+      frames_k: Math.round(sum('nb_frames') / 1000),
+      fps_min: r1(col('fps_mean')[0]),
+      fps_max: r1(col('fps_mean')[videos.length - 1]),
+      fps_p05_min: r1(col('fps_p05')[0]),
+      fps_p95_max: r1(col('fps_p95')[videos.length - 1]),
+      live_pct: r1(live * 100),
+      nonlive_pct: r1((1 - live) * 100),
+      live_hours: Math.round(sum('live_minutes') / 0.6) / 100,
+      stalls_500: sum('gaps_over_500ms'),
+      stalled_s: r1(sum('stalled_time_s')),
+      ball_pct: r1(mean('ball_visible_live') * 100),
+      ball_px: r1(med('ball_px_median')),
+      person_h: Math.round(med('person_h_px_median')),
+      persons: r1(mean('persons_per_frame_live')),
+      mbps: r1(med('video_bitrate_mbps')),
+      sharp_matches: videos.filter((r) => v(r, 'sharpness_live') > 45).map((r) => r.match_id).join(', '),
+      sharp_hi: r1((() => { const c = videos.filter((r) => v(r, 'sharpness_live') > 45).map((r) => v(r, 'sharpness_live')).sort((a, b) => a - b); const m = c.length >> 1; return c.length % 2 ? c[m] : (c[m - 1] + c[m]) / 2; })()),
+      sharp_lo: r1((() => { const c = videos.filter((r) => v(r, 'sharpness_live') <= 45).map((r) => v(r, 'sharpness_live')).sort((a, b) => a - b); const m = c.length >> 1; return c.length % 2 ? c[m] : (c[m - 1] + c[m]) / 2; })()),
+      n_train: videos.filter((r) => r.split === 'train').length,
+      n_val: videos.filter((r) => r.split === 'val').length,
+      n_test: videos.filter((r) => r.split === 'test').length,
+    }];
+  },
+});
+
+dash.calc('format', {
+  inputs: ['videos'],
+  title: 'Recording format',
+  description: 'The container and stream format shared by the recordings, and how many distinct formats there are.',
+  fn: (videos) => {
+    const keys = ['width', 'height', 'vcodec', 'profile', 'pix_fmt', 'color_range', 'color_space', 'acodec', 'sample_rate', 'channels', 'android_version'];
+    const n_formats = new Set(videos.map((r) => keys.map((k) => r[k]).join('|'))).size;
+    const r = videos[0];
+    const w = Number(r.width), h = Number(r.height);
+    const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+    const g = gcd(w, h);
+    const rates = videos.map((x) => Number(x.video_bitrate_mbps));
+    return [{
+      n_formats,
+      n_files: videos.length,
+      width: w,
+      height: h,
+      aspect: `${w / g}:${h / g}`,
+      megapixels: Math.round(w * h / 1e5) / 10,
+      vcodec: String(r.vcodec).toUpperCase().replace('H264', 'H.264'),
+      profile: r.profile,
+      pix_fmt: r.pix_fmt,
+      color_range: r.color_range === 'tv' ? 'limited' : r.color_range,
+      color_space: r.color_space === 'smpte170m' ? 'BT.601 (smpte170m)' : r.color_space,
+      mbps_min: Math.round(Math.min(...rates) * 10) / 10,
+      mbps_max: Math.round(Math.max(...rates) * 10) / 10,
+      acodec: String(r.acodec).toUpperCase(),
+      sample_khz: Number(r.sample_rate) / 1000,
+      channels: Number(r.channels),
+      android: r.android_version,
+    }];
+  },
+});
+
+dash.calc('fps_time', {
+  inputs: ['fps_hist', 'videos'],
+  title: 'Time at each frame rate',
+  description: 'Share of wall-clock time at each instantaneous frame rate, per match and over all matches weighted by duration.',
+  fn: (fps_hist, videos) => {
+    const dur = {};
+    videos.forEach((r) => { dur[r.match_id] = Number(r.duration_s); });
+    const total = Object.values(dur).reduce((a, b) => a + b, 0);
+    const all = {};
+    const out = [];
+    fps_hist.forEach((r) => {
+      const s = Number(r.share_time);
+      out.push({ match_id: r.match_id, fps_lo: Number(r.fps_lo), fps_bin: r.fps_bin, share: s });
+      const k = r.fps_bin;
+      all[k] = all[k] || { match_id: 'All', fps_lo: Number(r.fps_lo), fps_bin: k, share: 0 };
+      all[k].share += s * (dur[r.match_id] || 0) / total;
+    });
+    return Object.values(all).map((r) => ({ ...r, share: Math.round(r.share * 10000) / 10000 })).concat(out);
+  },
+});
+</script>
+
+<script>
+(() => {
+  const root = document.getElementById('dash-root') || document.body;
+  const E = (window.EDA = {});
+  const SPLITS = ['train', 'val', 'test'];
+  const STATES = ['live', 'replay_or_cutscene', 'other', 'black'];
+  const STATE_NAME = { live: 'Live play', replay_or_cutscene: 'Replay or cutscene', other: 'Menu or other', black: 'Black' };
+  E.splitColor = (s) => dash.colors[SPLITS.indexOf(s)] || 'var(--cds-chart-muted)';
+  E.stateColor = (s) => (s === 'black' ? 'var(--cds-chart-muted)' : dash.colors[3 + STATES.indexOf(s)]);
+  E.STATES = STATES; E.STATE_NAME = STATE_NAME; E.SPLITS = SPLITS;
+
+  // ---- parsing (CSV cells arrive as text), cached per data array
+  const cache = new WeakMap();
+  E.rows = (id) => {
+    const d = dash.data(id);
+    if (d.status !== 'ok' || !Array.isArray(d.data)) return null;
+    if (!cache.has(d.data)) {
+      cache.set(d.data, d.data.map((r) => {
+        const o = {};
+        for (const k in r) {
+          const x = r[k];
+          o[k] = x === '' || x == null ? null : (typeof x === 'number' || isNaN(+x) ? x : +x);
+        }
+        return o;
+      }));
+    }
+    return cache.get(d.data);
+  };
+  E.status = (ids) => {
+    const st = ids.map((id) => dash.data(id).status);
+    if (st.every((s) => s === 'ok')) return 'ok';
+    if (st.some((s) => s === 'error' || s === 'connect' || s === 'declined' || s === 'missing')) return 'error';
+    return 'loading';
+  };
+  E.placeholder = (el, state) => {
+    el.replaceChildren();
+    if (state === 'error') {
+      el.classList.remove('dash-skeleton');
+      const d = document.createElement('div'); d.className = 'eda-fail'; d.textContent = 'Failed to load'; el.append(d);
+    } else el.classList.add('dash-skeleton');
+  };
+
+  // ---- resolved colours for interpolation
+  E.resolve = (c) => {
+    const s = document.createElement('span'); s.style.color = c; root.appendChild(s);
+    const r = getComputedStyle(s).color; s.remove(); return r;
+  };
+
+  // ---- formatting
+  E.f = { int: d3.format(','), d1: d3.format(',.1f'), d2: d3.format(',.2f'), pct: d3.format('.1%'), pct0: d3.format('.0%') };
+
+  // ---- tooltip
+  E.tip = (box) => {
+    let t = box.querySelector(':scope > .eda-tip');
+    if (!t) { t = document.createElement('div'); t.className = 'eda-tip'; t.hidden = true; box.appendChild(t); }
+    return {
+      show(ev, head, lines) {
+        t.replaceChildren();
+        const h = document.createElement('div'); h.className = 'h'; h.textContent = head; t.append(h);
+        for (const [col, name, val] of lines) {
+          const r = document.createElement('div'); r.className = 'r';
+          if (col) { const i = document.createElement('i'); i.style.background = col; r.append(i); }
+          const n = document.createElement('span'); n.textContent = name;
+          const b = document.createElement('b'); b.textContent = val;
+          r.append(n, b); t.append(r);
+        }
+        t.hidden = false;
+        const bb = box.getBoundingClientRect();
+        let x = ev.clientX - bb.left + 14, y = ev.clientY - bb.top + 14;
+        if (x + t.offsetWidth > bb.width) x = Math.max(0, ev.clientX - bb.left - t.offsetWidth - 14);
+        if (y + t.offsetHeight > bb.height) y = Math.max(0, ev.clientY - bb.top - t.offsetHeight - 14);
+        t.style.left = x + 'px'; t.style.top = y + 'px';
+      },
+      hide() { t.hidden = true; },
+    };
+  };
+
+  // ---- legend
+  E.legend = (card, items) => {
+    const lg = card.querySelector('.lg'); if (!lg) return;
+    lg.replaceChildren(...items.map(([c, name]) => {
+      const s = document.createElement('span'); const i = document.createElement('i'); i.style.background = c;
+      s.append(i, document.createTextNode(name)); return s;
+    }));
+  };
+
+  // ---- chart frame with margins measured from the drawn tick labels
+  E.frame = (el, height, yLabels, opt = {}) => {
+    el.replaceChildren(); el.classList.remove('dash-skeleton');
+    const W = Math.max(280, el.clientWidth || 600);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', height).attr('viewBox', `0 0 ${W} ${height}`);
+    const probe = svg.append('g');
+    let left = 0;
+    (yLabels || []).forEach((s) => { const t = probe.append('text').attr('font-size', 'var(--cds-font-size-caption)').text(s); left = Math.max(left, t.node().getComputedTextLength()); });
+    probe.remove();
+    const m = { left: Math.ceil(left) + 10, right: opt.right ?? 14, top: opt.top ?? 8, bottom: opt.bottom ?? 26 };
+    const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`);
+    return { svg, g, W, H: height, m, iw: W - m.left - m.right, ih: height - m.top - m.bottom };
+  };
+  const style = (a) => { a.attr('font-size', null).attr('font-family', null); a.selectAll('text').attr('fill', 'var(--color-fg-muted)'); return a; };
+  E.yAxis = (f, y, fmt, ticks = 4) => {
+    const a = style(f.g.append('g').call(d3.axisLeft(y).ticks(ticks).tickFormat(fmt).tickSize(-f.iw).tickPadding(6)));
+    a.select('.domain').remove(); a.selectAll('line').attr('stroke', 'var(--cds-chart-grid)'); return a;
+  };
+  E.xAxis = (f, x, fmt, ticks) => {
+    const ax = d3.axisBottom(x).tickSizeOuter(0); if (fmt) ax.tickFormat(fmt); if (ticks != null) ax.ticks(ticks);
+    const a = style(f.g.append('g').attr('transform', `translate(0,${f.ih})`).call(ax));
+    a.select('.domain').attr('stroke', 'var(--cds-chart-axis)'); a.selectAll('line').attr('stroke', 'var(--cds-chart-axis)');
+    // drop labels that would meet their neighbour
+    let last = -Infinity;
+    a.selectAll('.tick').each(function () {
+      const t = d3.select(this).select('text'); const n = t.node(); if (!n) return;
+      const w = n.getComputedTextLength(); const x0 = +d3.select(this).attr('transform').match(/\(([-\d.]+)/)[1];
+      if (x0 - w / 2 < last + 6 || x0 + w / 2 > f.iw + f.m.right) t.remove(); else last = x0 + w / 2;
+    });
+    return a;
+  };
+  E.xTicks = (iw) => Math.max(2, Math.floor(iw / 70));
+
+  // ---- per-match horizontal chart: rows of {match_id, split, ...}
+  //   kind 'range': lo/hi bar + tick; 'box': p10,p25,p50,p75,p90; 'bar': value; 'stack': parts
+  E.matchChart = (el, rows, opt) => {
+    const rowH = 18;
+    const labels = rows.map((r) => r.match_id);
+    const f = E.frame(el, rows.length * rowH + 34, labels, { right: opt.right ?? 40 });
+    const y = d3.scaleBand(labels, [0, rows.length * rowH]).padding(0.25);
+    f.ih = rows.length * rowH;
+    const x = d3.scaleLinear([opt.min ?? 0, opt.max], [0, f.iw]).nice();
+    f.g.append('g').call((g) => {
+      const a = style(g.call(d3.axisTop(x).ticks(E.xTicks(f.iw)).tickFormat(opt.fmt).tickSize(-f.ih)));
+      a.select('.domain').remove(); a.selectAll('line').attr('stroke', 'var(--cds-chart-grid)');
+    }).attr('transform', 'translate(0,0)');
+    f.svg.attr('viewBox', `0 0 ${f.W} ${f.H}`);
+    f.g.attr('transform', `translate(${f.m.left},${24})`);
+    const yl = style(f.g.append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8)));
+    yl.select('.domain').remove();
+    const tip = E.tip(el);
+    const sel = dash.params().match;
+    yl.selectAll('text').attr('font-weight', (d) => (d === sel ? 600 : null)).attr('fill', (d) => (d === sel ? 'var(--color-fg)' : 'var(--color-fg-muted)'));
+    const bh = y.bandwidth();
+    rows.forEach((r) => {
+      const g = f.g.append('g').attr('transform', `translate(0,${y(r.match_id)})`);
+      const col = opt.color ? opt.color(r) : E.splitColor(r.split);
+      if (opt.kind === 'bar') {
+        g.append('rect').attr('x', x(0)).attr('y', 0).attr('height', bh).attr('rx', 3)
+          .attr('width', Math.max(0, x(opt.value(r)) - x(0))).attr('fill', col);
+        g.append('text').attr('x', x(opt.value(r)) + 4).attr('y', bh / 2).attr('dy', '0.35em').attr('fill', 'var(--color-fg-muted)').text(opt.fmt(opt.value(r)));
+      } else if (opt.kind === 'range') {
+        const [lo, hi, mid] = [opt.lo(r), opt.hi(r), opt.mid(r)];
+        g.append('rect').attr('x', x(lo)).attr('y', bh * 0.2).attr('height', bh * 0.6).attr('rx', 3).attr('width', Math.max(1, x(hi) - x(lo))).attr('fill', col).attr('opacity', 0.45);
+        g.append('rect').attr('x', x(mid) - 1.5).attr('y', 0).attr('width', 3).attr('height', bh).attr('rx', 1).attr('fill', col);
+      } else if (opt.kind === 'box') {
+        const q = opt.q(r);
+        g.append('line').attr('x1', x(q[0])).attr('x2', x(q[4])).attr('y1', bh / 2).attr('y2', bh / 2).attr('stroke', col).attr('stroke-width', 2).attr('stroke-linecap', 'round');
+        g.append('rect').attr('x', x(q[1])).attr('y', 0).attr('height', bh).attr('rx', 3).attr('width', Math.max(1, x(q[3]) - x(q[1]))).attr('fill', col).attr('opacity', 0.45);
+        g.append('rect').attr('x', x(q[2]) - 1.5).attr('y', 0).attr('width', 3).attr('height', bh).attr('rx', 1).attr('fill', col);
+      } else if (opt.kind === 'stack') {
+        let acc = 0;
+        opt.parts.forEach(([key, c]) => {
+          const v = r[key] || 0;
+          if (v > 0) g.append('rect').attr('x', x(acc) + 1).attr('y', 0).attr('height', bh).attr('width', Math.max(0, x(acc + v) - x(acc) - 2)).attr('rx', 2).attr('fill', c);
+          acc += v;
+        });
+      }
+      g.append('rect').attr('x', -f.m.left).attr('y', -y.paddingInner() * y.step() / 2).attr('width', f.iw + f.m.left + 40).attr('height', y.step()).attr('fill', 'transparent')
+        .style('cursor', 'pointer')
+        .on('mousemove', (ev) => tip.show(ev, `${r.match_id} · ${r.split}`, opt.tip(r)))
+        .on('mouseleave', () => tip.hide())
+        .on('click', () => dash.setParams({ match: r.match_id }));
+    });
+    return f;
+  };
+
+  // ---- multi-series line chart over numeric x: series [{name, color, pts:[[x,y]...]}]
+  E.lines = (el, series, opt) => {
+    const all = series.flatMap((s) => s.pts);
+    const yMax = opt.yMax ?? d3.max(all, (p) => p[1]) ?? 1;
+    const y0 = d3.scaleLinear([0, yMax], [0, 1]).nice();
+    const ticks = y0.ticks(4).map(opt.yFmt);
+    const f = E.frame(el, opt.height || 220, ticks, { bottom: opt.bottom });
+    const x = d3.scaleLinear(opt.xDomain || d3.extent(all, (p) => p[0]), [0, f.iw]);
+    const y = d3.scaleLinear(y0.domain(), [f.ih, 0]);
+    E.yAxis(f, y, opt.yFmt);
+    E.xAxis(f, x, opt.xFmt, E.xTicks(f.iw));
+    (opt.refs || []).forEach((v) => f.g.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 0).attr('y2', f.ih).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3'));
+    (opt.hrefs || []).forEach((v) => f.g.append('line').attr('x1', 0).attr('x2', f.iw).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3'));
+    const line = d3.line().x((p) => x(p[0])).y((p) => y(p[1]));
+    series.forEach((s) => {
+      f.g.append('path').attr('d', line(s.pts)).attr('fill', 'none').attr('stroke', s.color).attr('stroke-width', s.width || 2)
+        .attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round').attr('opacity', s.opacity ?? 1);
+    });
+    // hover: nearest x
+    const xs = Array.from(new Set(all.map((p) => p[0]))).sort((a, b) => a - b);
+    const tip = E.tip(el);
+    const rule = f.g.append('line').attr('y1', 0).attr('y2', f.ih).attr('stroke', 'var(--cds-chart-axis)').attr('opacity', 0);
+    const dots = series.map((s) => f.g.append('circle').attr('r', 4).attr('fill', s.color).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2).attr('opacity', 0));
+    f.g.append('rect').attr('width', f.iw).attr('height', f.ih).attr('fill', 'transparent')
+      .on('mousemove', (ev) => {
+        const [mx] = d3.pointer(ev); const xv = x.invert(mx);
+        const xi = xs[Math.max(0, Math.min(xs.length - 1, d3.bisectCenter(xs, xv)))];
+        rule.attr('x1', x(xi)).attr('x2', x(xi)).attr('opacity', 1);
+        const lines = [];
+        series.forEach((s, i) => {
+          const p = s.pts.find((q) => q[0] === xi);
+          if (p) { dots[i].attr('cx', x(p[0])).attr('cy', y(p[1])).attr('opacity', 1); lines.push([series.length > 1 ? s.color : null, s.name + ' ', opt.yFmt(p[1])]); }
+          else dots[i].attr('opacity', 0);
+        });
+        tip.show(ev, opt.xLabel(xi), lines);
+      })
+      .on('mouseleave', () => { tip.hide(); rule.attr('opacity', 0); dots.forEach((d) => d.attr('opacity', 0)); });
+    return f;
+  };
+
+  // ---- histogram of values into fixed bins, as shares
+  E.hist = (vals, lo, hi, step) => {
+    const n = Math.round((hi - lo) / step); const c = new Array(n).fill(0); let tot = 0;
+    vals.forEach((v) => { if (v == null || isNaN(v)) return; const i = Math.min(n - 1, Math.max(0, Math.floor((v - lo) / step))); c[i]++; tot++; });
+    return c.map((k, i) => [lo + (i + 0.5) * step, tot ? k / tot : 0]);
+  };
+  E.quant = (vals, ps) => { const s = vals.filter((v) => v != null && !isNaN(v)).sort((a, b) => a - b); return ps.map((p) => d3.quantileSorted(s, p)); };
+})();
+</script>
+
+<script>
+(() => {
+  const E = window.EDA;
+  const pages = ['overview', 'timing', 'picture', 'state', 'motion', 'objects', 'samples'];
+  let current = 'overview';
+  const tabs = document.querySelectorAll('.eda-tabs button');
+  const show = (p) => {
+    current = pages.includes(p) ? p : 'overview';
+    document.querySelectorAll('.eda-page').forEach((s) => { s.hidden = s.dataset.page !== current; });
+    tabs.forEach((b) => b.setAttribute('aria-selected', String(b.dataset.page === current)));
+    dash.setLink(current);
+    draw();
+  };
+  tabs.forEach((b) => b.addEventListener('click', () => show(b.dataset.page)));
+  const sel = document.getElementById('eda-match');
+  sel.addEventListener('change', () => dash.setParams({ match: sel.value }));
+  const metricSel = document.getElementById('eda-metric');
+  metricSel.addEventListener('change', () => draw());
+  const $ = (id) => document.getElementById(id);
+  const chartOf = (id) => $(id).querySelector('.c');
+
+  // ---- header and KPI marks
+  const fillTotals = () => {
+    const t = E.rows('totals');
+    document.querySelectorAll('[data-source="totals"][data-field]').forEach((el) => {
+      el.textContent = t ? (typeof t[0][el.dataset.field] === 'number' ? E.f.d1(t[0][el.dataset.field]).replace(/\.0$/, '') : t[0][el.dataset.field]) : '—';
+    });
+    document.querySelectorAll('[data-source="totals"]:not([data-field])').forEach((el) => el.classList.toggle('dash-skeleton', !t));
+    const fm = E.rows('format');
+    document.querySelectorAll('[data-source="format"][data-field]').forEach((el) => {
+      const v = fm ? fm[0][el.dataset.field] : null;
+      el.textContent = v == null ? '—' : (typeof v === 'number' && !['width', 'height'].includes(el.dataset.field) ? E.f.d1(v).replace(/\.0$/, '') : String(v));
+    });
+  };
+
+  // ---- overview table
+  let sortKey = 'match_id', sortDir = 1;
+  const cols = [
+    ['match_id', (v) => v], ['session', (v) => v], ['split', (v) => v], ['minutes', E.f.d1], ['size_mb', E.f.int],
+    ['video_bitrate_mbps', E.f.d1], ['fps_mean', E.f.d1], ['fps_p05', E.f.d1], ['gaps_over_500ms', E.f.int], ['gop_s_median', E.f.d1],
+    ['share_live', E.f.pct], ['cuts_per_min', E.f.d1], ['sharpness_live', E.f.d1], ['persons_per_frame_live', E.f.d1],
+    ['ball_visible_live', E.f.pct], ['person_h_px_median', E.f.d1], ['mean_volume_db', E.f.d1],
+  ];
+  document.querySelectorAll('#video-table th').forEach((th) => th.querySelector('button').addEventListener('click', () => {
+    const k = th.dataset.field; sortDir = sortKey === k ? -sortDir : 1; sortKey = k; drawTable();
+  }));
+  const drawTable = () => {
+    const rows = E.rows('videos');
+    const tb = document.querySelector('#video-table tbody');
+    document.querySelectorAll('#video-table th').forEach((th) => th.setAttribute('aria-sort', th.dataset.field === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'));
+    if (!rows) { tb.replaceChildren(); return; }
+    const s = rows.slice().sort((a, b) => (a[sortKey] > b[sortKey] ? 1 : a[sortKey] < b[sortKey] ? -1 : 0) * sortDir);
+    const pick = dash.params().match;
+    tb.replaceChildren(...s.map((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.match_id; if (r.match_id === pick) tr.className = 'sel';
+      cols.forEach(([k, fmt], i) => { const td = document.createElement('td'); if (i === 1 || i === 2) td.className = 'l'; td.textContent = r[k] == null ? '' : fmt(r[k]); tr.append(td); });
+      return tr;
+    }));
+  };
+  document.querySelector('#video-table tbody').addEventListener('click', (ev) => {
+    const tr = ev.target.closest('tr[data-key]'); if (tr) dash.setParams({ match: tr.dataset.key });
+  });
+
+  // ---- TIMING
+  const drawTiming = () => {
+    const pick = dash.params().match;
+    // time at each fps
+    let el = chartOf('fps-time');
+    const ft = E.rows('fps_time');
+    if (!ft) E.placeholder(el, E.status(['fps_hist', 'videos']));
+    else {
+      const all = ft.filter((r) => r.match_id === 'All').sort((a, b) => a.fps_lo - b.fps_lo);
+      const one = ft.filter((r) => r.match_id === pick).sort((a, b) => a.fps_lo - b.fps_lo);
+      const bins = all.map((r) => r.fps_bin);
+      const f = E.frame(el, 230, [0, 0.1, 0.2, 0.3, 0.4, 0.5].map(E.f.pct0), {});
+      const x = d3.scaleBand(bins, [0, f.iw]).padding(0.2);
+      const y = d3.scaleLinear([0, d3.max(ft.filter((r) => r.match_id === 'All' || r.match_id === pick), (r) => r.share)], [f.ih, 0]).nice();
+      E.yAxis(f, y, E.f.pct0);
+      const xa = d3.scaleBand(bins, [0, f.iw]); E.xAxis(f, xa);
+      const tip = E.tip(el);
+      all.forEach((r) => {
+        const o = one.find((q) => q.fps_bin === r.fps_bin);
+        f.g.append('rect').attr('x', x(r.fps_bin)).attr('width', x.bandwidth()).attr('y', y(r.share)).attr('height', f.ih - y(r.share)).attr('rx', 3).attr('fill', dash.colors[0]);
+        f.g.append('rect').attr('x', xa(r.fps_bin)).attr('width', xa.bandwidth()).attr('y', 0).attr('height', f.ih).attr('fill', 'transparent')
+          .on('mousemove', (ev) => tip.show(ev, `${r.fps_bin} fps`, [[dash.colors[0], 'All matches ', E.f.pct(r.share)], [dash.colors[1], pick + ' ', o ? E.f.pct(o.share) : '—']]))
+          .on('mouseleave', () => tip.hide());
+      });
+      const line = d3.line().x((r) => x(r.fps_bin) + x.bandwidth() / 2).y((r) => y(r.share));
+      f.g.append('path').attr('d', line(one)).attr('fill', 'none').attr('stroke', dash.colors[1]).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('pointer-events', 'none');
+      one.forEach((r) => f.g.append('circle').attr('cx', x(r.fps_bin) + x.bandwidth() / 2).attr('cy', y(r.share)).attr('r', 3).attr('fill', dash.colors[1]).attr('pointer-events', 'none'));
+      E.legend($('fps-time'), [[dash.colors[0], 'All matches'], [dash.colors[1], pick]]);
+    }
+    const vids = E.rows('videos');
+    // fps range
+    el = chartOf('fps-range');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      E.matchChart(el, vids, { kind: 'range', max: d3.max(vids, (r) => r.fps_p95), fmt: d3.format('d'), lo: (r) => r.fps_p05, hi: (r) => r.fps_p95, mid: (r) => r.fps_mean,
+        tip: (r) => [[null, 'Mean ', E.f.d1(r.fps_mean) + ' fps'], [null, 'Median gap ', E.f.d1(r.dt_ms_median) + ' ms'], [null, 'p5 to p95 ', `${E.f.d1(r.fps_p05)} to ${E.f.d1(r.fps_p95)} fps`]] });
+      E.legend($('fps-range'), E.SPLITS.map((s) => [E.splitColor(s), s]));
+    }
+    // per second
+    const ps = E.rows('per_second');
+    for (const [id, key, fmt, unit, ref] of [['fps-second', 'frames', d3.format('d'), ' frames', 30], ['mbps-second', 'mbps', E.f.d1, ' Mbit', null]]) {
+      el = chartOf(id);
+      if (!ps) { E.placeholder(el, E.status(['per_second'])); continue; }
+      const pts = ps.filter((r) => r.match_id === pick).map((r) => [r.sec, r[key]]);
+      E.lines(el, [{ name: pick, color: dash.colors[0], pts, width: 1.5 }], {
+        height: id === 'fps-second' ? 200 : 180, yFmt: fmt, xFmt: (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`,
+        xLabel: (s) => `${pick} at ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`, hrefs: ref ? [ref] : [],
+      });
+    }
+    // stalls
+    el = chartOf('stalls');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      E.matchChart(el, vids, { kind: 'bar', max: d3.max(vids, (r) => r.stalled_time_s), fmt: (v) => E.f.d1(v) + ' s', value: (r) => r.stalled_time_s,
+        tip: (r) => [[null, 'Time frozen ', E.f.d1(r.stalled_time_s) + ' s'], [null, 'Gaps > 100 ms ', E.f.int(r.gaps_over_100ms)], [null, 'Gaps > 500 ms ', E.f.int(r.gaps_over_500ms)], [null, 'Longest gap ', E.f.int(r.dt_ms_max) + ' ms']] });
+      E.legend($('stalls'), E.SPLITS.map((s) => [E.splitColor(s), s]));
+    }
+    // frame size by type
+    el = chartOf('encode');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      E.matchChart(el, vids, { kind: 'range', max: d3.max(vids, (r) => r.kb_keyframe_mean), fmt: d3.format('d'),
+        lo: (r) => r.kb_interframe_mean, hi: (r) => r.kb_keyframe_mean, mid: (r) => r.kb_per_frame_mean, color: () => dash.colors[0],
+        tip: (r) => [[null, 'Keyframe ', E.f.d1(r.kb_keyframe_mean) + ' KB'], [null, 'Other frames ', E.f.d1(r.kb_interframe_mean) + ' KB'], [null, 'All frames ', E.f.d1(r.kb_per_frame_mean) + ' KB'], [null, 'Keyframe every ', E.f.d1(r.gop_s_median) + ' s']] });
+      E.legend($('encode'), [[dash.colors[0], 'Bar: other frames to keyframes; tick: mean']]);
+    }
+  };
+
+  // ---- PICTURE
+  const METRIC = {
+    luma: [d3.format('d'), 'Brightness'], contrast: [d3.format('d'), 'Contrast'], saturation: [d3.format('d'), 'Saturation'],
+    colourfulness: [d3.format('d'), 'Colourfulness'], sharpness: [d3.format('d'), 'Sharpness'], entropy: [d3.format('.1f'), 'Entropy'], green_frac: [d3.format('.0%'), 'Grass share'],
+  };
+  const drawPicture = () => {
+    const m = metricSel.value; const [fmt, name] = METRIC[m];
+    const s = E.rows('samples');
+    let el = chartOf('pic-range');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const by = d3.group(s.filter((r) => r.state === 'live'), (r) => r.match_id);
+      const rows = Array.from(by, ([match_id, rs]) => ({ match_id, split: rs[0].split, q: E.quant(rs.map((r) => r[m]), [0.1, 0.25, 0.5, 0.75, 0.9]), n: rs.length }))
+        .sort((a, b) => d3.ascending(a.match_id, b.match_id));
+      E.matchChart(el, rows, { kind: 'box', min: m === 'entropy' ? d3.min(rows, (r) => r.q[0]) : 0, max: d3.max(rows, (r) => r.q[4]), fmt, q: (r) => r.q,
+        tip: (r) => [[null, 'Median ', fmt(r.q[2])], [null, 'p25 to p75 ', `${fmt(r.q[1])} to ${fmt(r.q[3])}`], [null, 'p10 to p90 ', `${fmt(r.q[0])} to ${fmt(r.q[4])}`], [null, 'Live samples ', E.f.int(r.n)]] });
+      E.legend($('pic-range'), E.SPLITS.map((x) => [E.splitColor(x), x]));
+    }
+    el = chartOf('pic-state');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const vals = s.map((r) => r[m]).filter((v) => v != null);
+      let [lo, hi] = m === 'green_frac' ? [0, 1] : E.quant(vals, [0, 0.99]);
+      if (m !== 'entropy') lo = 0;
+      const step = (hi - lo) / 30 || 1;
+      const series = E.STATES.map((st) => ({ name: E.STATE_NAME[st], color: E.stateColor(st), pts: E.hist(s.filter((r) => r.state === st).map((r) => r[m]), lo, hi + step, step) }));
+      E.lines(el, series, { yFmt: E.f.pct0, xFmt: fmt, xLabel: (v) => `${name} ≈ ${fmt(v)}` });
+      E.legend($('pic-state'), E.STATES.map((st) => [E.stateColor(st), E.STATE_NAME[st]]));
+    }
+    el = chartOf('hue');
+    const hue = E.rows('hue');
+    if (!hue) E.placeholder(el, E.status(['hue']));
+    else {
+      const series = E.SPLITS.map((sp) => ({ name: sp, color: E.splitColor(sp), pts: hue.filter((r) => r.split === sp).map((r) => [r.hue_deg + 2, r.share]) }));
+      const f = E.lines(el, series, { yFmt: d3.format('.1%'), xFmt: (v) => v + '°', xDomain: [0, 360], xLabel: (v) => `Hue ${v - 2}° to ${v + 2}°`, bottom: 40 });
+      const x = d3.scaleLinear([0, 360], [0, f.iw]);
+      d3.range(0, 360, 4).forEach((h) => f.g.append('rect').attr('x', x(h)).attr('width', x(4) - x(0) + 0.5).attr('y', f.ih + 24).attr('height', 8).attr('fill', `hsl(${h},70%,50%)`));
+      E.legend($('hue'), E.SPLITS.map((x2) => [E.splitColor(x2), x2]));
+    }
+  };
+
+  // ---- STATE
+  const drawState = () => {
+    const s = E.rows('samples');
+    let el = chartOf('state-timeline');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const ids = Array.from(new Set(s.map((r) => r.match_id))).sort();
+      const rowH = 16;
+      const f = E.frame(el, ids.length * rowH + 30, ids, {});
+      f.ih = ids.length * rowH;
+      const tmax = d3.max(s, (r) => r.t) + 0.5;
+      const x = d3.scaleLinear([0, tmax], [0, f.iw]);
+      const y = d3.scaleBand(ids, [0, f.ih]).padding(0.2);
+      const xa = f.g.append('g').attr('transform', `translate(0,${f.ih})`)
+        .call(d3.axisBottom(x).tickValues(d3.range(0, tmax, f.iw < 500 ? 120 : 60)).tickFormat((v) => `${v / 60} min`).tickSizeOuter(0));
+      xa.attr('font-size', null).attr('font-family', null).selectAll('text').attr('fill', 'var(--color-fg-muted)');
+      xa.selectAll('line, .domain').attr('stroke', 'var(--cds-chart-axis)');
+      const yl = d3.select(f.g.node()).append('g').call(d3.axisLeft(y).tickSize(0).tickPadding(8));
+      yl.attr('font-size', null).attr('font-family', null).select('.domain').remove(); yl.selectAll('text').attr('fill', 'var(--color-fg-muted)');
+      const tip = E.tip(el);
+      ids.forEach((id) => {
+        const rs = s.filter((r) => r.match_id === id).sort((a, b) => a.t - b.t);
+        const runs = []; rs.forEach((r) => { const l = runs[runs.length - 1]; if (l && l.state === r.state) l.t1 = r.t + 0.5; else runs.push({ state: r.state, t0: r.t, t1: r.t + 0.5 }); });
+        const g = f.g.append('g').attr('transform', `translate(0,${y(id)})`);
+        runs.forEach((u) => g.append('rect').attr('x', x(u.t0)).attr('width', Math.max(0.5, x(u.t1) - x(u.t0))).attr('height', y.bandwidth()).attr('fill', E.stateColor(u.state))
+          .on('mousemove', (ev) => tip.show(ev, `${id} · ${Math.floor(u.t0 / 60)}:${String(Math.floor(u.t0 % 60)).padStart(2, '0')}`, [[E.stateColor(u.state), E.STATE_NAME[u.state] + ' ', E.f.d1(u.t1 - u.t0) + ' s']]))
+          .on('mouseleave', () => tip.hide()));
+      });
+      E.legend($('state-timeline'), E.STATES.map((st) => [E.stateColor(st), E.STATE_NAME[st]]));
+    }
+    const vids = E.rows('videos');
+    el = chartOf('state-share');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      const parts = [['share_live', E.stateColor('live')], ['share_replay', E.stateColor('replay_or_cutscene')], ['share_other', E.stateColor('other')], ['share_black', E.stateColor('black')]];
+      E.matchChart(el, vids, { kind: 'stack', max: 1, fmt: E.f.pct0, parts, right: 14,
+        tip: (r) => [[parts[0][1], 'Live ', E.f.pct(r.share_live)], [parts[1][1], 'Replay or cutscene ', E.f.pct(r.share_replay)], [parts[2][1], 'Menu or other ', E.f.pct(r.share_other)], [parts[3][1], 'Black ', E.f.pct(r.share_black)], [null, 'Live minutes ', E.f.d1(r.live_minutes)]] });
+      E.legend($('state-share'), E.STATES.map((st) => [E.stateColor(st), E.STATE_NAME[st]]));
+    }
+    el = chartOf('cuts');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      E.matchChart(el, vids, { kind: 'bar', max: d3.max(vids, (r) => r.cuts_per_min), fmt: E.f.d1, value: (r) => r.cuts_per_min,
+        tip: (r) => [[null, 'Cuts per minute ', E.f.d1(r.cuts_per_min)], [null, 'Near-duplicate live samples ', E.f.pct(r.share_near_dup_live)]] });
+      E.legend($('cuts'), E.SPLITS.map((x) => [E.splitColor(x), x]));
+    }
+  };
+
+  // ---- MOTION
+  const drawMotion = () => {
+    const s = E.rows('samples');
+    const live = s ? s.filter((r) => r.state === 'live') : null;
+    let el = chartOf('pan-dx');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const series = [
+        { name: 'Horizontal', color: dash.colors[0], pts: E.hist(live.map((r) => r.flow_dx), -80, 80, 4) },
+        { name: 'Vertical', color: dash.colors[1], pts: E.hist(live.map((r) => r.flow_dy), -80, 80, 4) },
+      ];
+      E.lines(el, series, { yFmt: E.f.pct0, xFmt: (v) => v + ' px', xLabel: (v) => `${v - 2} to ${v + 2} px per 0.5 s`, refs: [0] });
+    }
+    el = chartOf('pan-speed');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const by = d3.group(live, (r) => r.match_id);
+      const rows = Array.from(by, ([match_id, rs]) => ({ match_id, split: rs[0].split, q: E.quant(rs.map((r) => r.flow_mag), [0.1, 0.25, 0.5, 0.75, 0.9]) })).sort((a, b) => d3.ascending(a.match_id, b.match_id));
+      E.matchChart(el, rows, { kind: 'box', max: d3.max(rows, (r) => r.q[4]), fmt: d3.format('d'), q: (r) => r.q,
+        tip: (r) => [[null, 'Median ', E.f.d1(r.q[2]) + ' px'], [null, 'p10 to p90 ', `${E.f.d1(r.q[0])} to ${E.f.d1(r.q[4])} px`]] });
+      E.legend($('pan-speed'), E.SPLITS.map((x) => [E.splitColor(x), x]));
+    }
+    el = chartOf('mad-state');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const series = E.STATES.slice(0, 3).map((st) => ({ name: E.STATE_NAME[st], color: E.stateColor(st), pts: E.hist(s.filter((r) => r.state === st).map((r) => r.mad), 0, 60, 2) }));
+      E.lines(el, series, { yFmt: E.f.pct0, xFmt: d3.format('d'), xLabel: (v) => `Change ${v - 1} to ${v + 1} grey levels` });
+      E.legend($('mad-state'), E.STATES.slice(0, 3).map((st) => [E.stateColor(st), E.STATE_NAME[st]]));
+    }
+  };
+
+  // ---- OBJECTS
+  const heat = (id, cls) => {
+    const el = chartOf(id);
+    const h = E.rows('heatmap');
+    if (!h) { E.placeholder(el, E.status(['heatmap'])); return; }
+    const cells = h.filter((r) => r.cls === cls);
+    const GX = d3.max(cells, (r) => r.gx) + 1, GY = d3.max(cells, (r) => r.gy) + 1;
+    el.replaceChildren(); el.classList.remove('dash-skeleton');
+    const W = Math.max(280, el.clientWidth), Hh = Math.round(W * 1080 / 2400);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', Hh).attr('viewBox', `0 0 ${W} ${Hh}`);
+    const max = d3.max(cells, (r) => r.count) || 1;
+    const ramp = d3.interpolateRgb(E.resolve('var(--color-bg)'), E.resolve(dash.colors[0]));
+    const cw = W / GX, ch = Hh / GY;
+    const tip = E.tip(el);
+    const tot = d3.sum(cells, (r) => r.count) || 1;
+    cells.forEach((r) => svg.append('rect').attr('x', r.gx * cw).attr('y', r.gy * ch).attr('width', cw + 0.3).attr('height', ch + 0.3).attr('fill', ramp(Math.sqrt(r.count / max)))
+      .on('mousemove', (ev) => tip.show(ev, `x ${Math.round(r.gx * 2400 / GX)}–${Math.round((r.gx + 1) * 2400 / GX)}, y ${Math.round(r.gy * 1080 / GY)}–${Math.round((r.gy + 1) * 1080 / GY)} px`, [[null, cls === 'ball' ? 'Balls ' : 'People ', E.f.int(r.count)], [null, 'Share ', d3.format('.2%')(r.count / tot)]]))
+      .on('mouseleave', () => tip.hide()));
+    svg.append('rect').attr('width', W).attr('height', Hh).attr('fill', 'none').attr('stroke', 'var(--color-border-line)');
+  };
+  const drawObjects = () => {
+    const s = E.rows('samples');
+    let el = chartOf('persons-hist');
+    if (!s) E.placeholder(el, E.status(['samples']));
+    else {
+      const d = s.filter((r) => r.state === 'live' && r.n_person != null);
+      const series = E.SPLITS.map((sp) => ({ name: sp, color: E.splitColor(sp), pts: E.hist(d.filter((r) => r.split === sp).map((r) => r.n_person), 0, 36, 1).map(([x, y]) => [x - 0.5, y]) }));
+      E.lines(el, series, { yFmt: E.f.pct0, xFmt: d3.format('d'), xLabel: (v) => `${v} people`, refs: [22] });
+      E.legend($('persons-hist'), E.SPLITS.map((x) => [E.splitColor(x), x]).concat([['var(--cds-chart-reference)', 'dashed: 22 players']]));
+    }
+    const vids = E.rows('videos');
+    el = chartOf('ball-seen');
+    if (!vids) E.placeholder(el, E.status(['videos']));
+    else {
+      E.matchChart(el, vids, { kind: 'bar', max: 1, fmt: E.f.pct0, value: (r) => r.ball_visible_live,
+        tip: (r) => [[null, 'Ball found ', E.f.pct(r.ball_visible_live)], [null, 'Median ball size ', E.f.d1(r.ball_px_median) + ' px'], [null, 'People per frame ', E.f.d1(r.persons_per_frame_live)], [null, 'Off-pitch people ', E.f.d1(r.off_pitch_people_live)]] });
+      E.legend($('ball-seen'), E.SPLITS.map((x) => [E.splitColor(x), x]));
+    }
+    const b = E.rows('box_sizes');
+    for (const [id, cls, unit] of [['person-size', 'person', 'px tall'], ['ball-size', 'ball', 'px']]) {
+      el = chartOf(id);
+      if (!b) { E.placeholder(el, E.status(['box_sizes'])); continue; }
+      const series = E.SPLITS.map((sp) => {
+        const rs = b.filter((r) => r.cls === cls && r.split === sp).sort((p, q) => p.px_lo - q.px_lo);
+        const tot = d3.sum(rs, (r) => r.count) || 1;
+        return { name: sp, color: E.splitColor(sp), pts: rs.map((r) => [(r.px_lo + r.px_hi) / 2, r.count / tot]) };
+      });
+      const step = series[0].pts.length > 1 ? series[0].pts[1][0] - series[0].pts[0][0] : 1;
+      E.lines(el, series, { yFmt: E.f.pct0, xFmt: d3.format('d'), xLabel: (v) => `${v - step / 2} to ${v + step / 2} ${unit}` });
+      E.legend($(id), E.SPLITS.map((x) => [E.splitColor(x), x]));
+    }
+    heat('heat-person', 'person');
+    heat('heat-ball', 'ball');
+  };
+
+  // ---- SAMPLES
+  const drawSamples = () => {
+    const pick = dash.params().match;
+    const im = (window.EDA_IMG || {})[pick];
+    const sheet = document.querySelector('#sheet .eda-sheet');
+    const pair = document.querySelector('#meanstd .eda-imgs');
+    if (!im) { sheet.replaceChildren(); pair.replaceChildren(); return; }
+    const img = (src, alt) => { const i = document.createElement('img'); i.src = src; i.alt = alt; i.loading = 'lazy'; return i; };
+    sheet.replaceChildren(img(im.sheet, `Twelve frames from ${pick}`));
+    const fig = (src, cap) => { const f = document.createElement('figure'); const c = document.createElement('figcaption'); c.textContent = cap; f.append(img(src, cap), c); return f; };
+    pair.replaceChildren(fig(im.mean, `${pick}: mean frame`), fig(im.std, `${pick}: per-pixel standard deviation`));
+  };
+
+  const drawMatchPicker = () => {
+    const v = E.rows('videos');
+    const pick = dash.params().match;
+    if (v && sel.options.length !== v.length) sel.replaceChildren(...v.map((r) => new Option(`${r.match_id} · ${r.split}`, r.match_id)));
+    sel.value = pick ?? '';
+  };
+
+  const draw = () => {
+    fillTotals(); drawMatchPicker();
+    if (current === 'overview') drawTable();
+    if (current === 'timing') drawTiming();
+    if (current === 'picture') drawPicture();
+    if (current === 'state') drawState();
+    if (current === 'motion') drawMotion();
+    if (current === 'objects') drawObjects();
+    if (current === 'samples') drawSamples();
+  };
+  dash.onData(draw);
+  const start = location.hash.slice(1);
+  show(pages.includes(start) ? start : 'overview');
+})();
+</script>

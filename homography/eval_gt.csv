@@ -1,0 +1,179 @@
+frame,landmark,err_px,err_m
+M04_0076.2s,halfway meets far touchline,1.18,0.053
+M04_0076.2s,centre circle meets halfway: far,0.13,0.003
+M04_0076.2s,centre spot,1.31,0.037
+M04_0076.2s,centre circle meets halfway: near,290.37,5.666
+M04_0121.9s,far corner,6.01,0.665
+M04_0121.9s,far penalty box: on goal line,3.56,0.143
+M04_0121.9s,far penalty box: front corner,2.25,0.231
+M04_0121.9s,far 6-yard box: on goal line,1.73,0.155
+M04_0121.9s,far 6-yard box: front corner,3.53,0.24
+M04_0121.9s,near 6-yard box: front corner,1.81,0.036
+M04_0121.9s,near 6-yard box: on goal line,4.55,0.104
+M04_0121.9s,near penalty box: front corner,2.07,0.058
+M04_0121.9s,D arc meets box edge: far,1.64,0.136
+M04_0121.9s,D arc meets box edge: near,1.1,0.06
+M04_0121.9s,halfway meets far touchline,1.04,0.091
+M04_0121.9s,centre circle meets halfway: far,4.97,0.132
+M04_0193.0s,halfway meets far touchline,0.79,0.084
+M04_0193.0s,centre circle meets halfway: far,1.09,0.084
+M04_0193.0s,centre spot,3.58,0.214
+M04_0193.0s,centre circle meets halfway: near,1.18,0.031
+M04_0209.5s,far corner,5.27,0.294
+M04_0209.5s,far penalty box: front corner,1.54,0.041
+M04_0209.5s,D arc meets box edge: far,1.56,0.109
+M04_0209.5s,halfway meets far touchline,1.74,0.106
+M04_0209.5s,centre circle meets halfway: far,2.81,0.2
+M04_0209.5s,centre spot,4.6,0.178
+M04_0209.5s,centre circle meets halfway: near,4.15,0.099
+M04_0277.4s,far penalty box: front corner,216.49,6.452
+M04_0277.4s,halfway meets far touchline,1.19,0.124
+M04_0277.4s,centre circle meets halfway: far,65.14,5.709
+M04_0277.4s,centre spot,56.35,4.433
+M04_0277.4s,centre circle meets halfway: near,0.39,0.011
+M04_0316.5s,far corner,5.04,0.329
+M04_0316.5s,far penalty box: on goal line,5.07,0.162
+M04_0316.5s,far penalty box: front corner,1.78,0.119
+M04_0316.5s,far 6-yard box: on goal line,5.52,0.202
+M04_0316.5s,far 6-yard box: front corner,2.78,0.181
+M04_0316.5s,near penalty box: front corner,4.5,0.083
+M04_0316.5s,D arc meets box edge: far,1.1,0.07
+M04_0316.5s,D arc meets box edge: near,3.43,0.093
+M04_0316.5s,centre circle meets halfway: far,3.97,0.169
+M04_0316.5s,centre spot,2.89,0.142
+M04_0316.5s,centre circle meets halfway: near,2.17,0.071
+M11_0072.3s,far corner,3.35,0.384
+M11_0072.3s,far penalty box: on goal line,4.5,0.142
+M11_0072.3s,far penalty box: front corner,1.88,0.205
+M11_0072.3s,far 6-yard box: on goal line,1.68,0.049
+M11_0072.3s,far 6-yard box: front corner,2.58,0.097
+M11_0072.3s,near 6-yard box: front corner,0.03,0.001
+M11_0072.3s,near 6-yard box: on goal line,2.82,0.052
+M11_0072.3s,near penalty box: front corner,0.84,0.012
+M11_0072.3s,D arc meets box edge: far,3.1,0.203
+M11_0072.3s,D arc meets box edge: near,2.06,0.061
+M11_0072.3s,halfway meets far touchline,5.15,0.477
+M11_0113.2s,far corner,6.82,0.372
+M11_0113.2s,far penalty box: on goal line,4.46,0.126
+M11_0113.2s,far penalty box: front corner,2.63,0.191
+M11_0113.2s,far 6-yard box: on goal line,4.55,0.11
+M11_0113.2s,far 6-yard box: front corner,1.56,0.095
+M11_0113.2s,near 6-yard box: front corner,3.87,0.13
+M11_0113.2s,D arc meets box edge: far,1.2,0.077
+M11_0113.2s,D arc meets box edge: near,2.81,0.063
+M11_0113.2s,halfway meets far touchline,8.72,0.432
+M11_0160.5s,far corner,1.88,0.064
+M11_0160.5s,far penalty box: front corner,5.99,0.216
+M11_0160.5s,D arc meets box edge: far,1.16,0.081
+M11_0160.5s,halfway meets far touchline,0.82,0.121
+M11_0160.5s,centre circle meets halfway: far,1.66,0.089
+M11_0160.5s,centre spot,1.13,0.031
+M11_0177.6s,far corner,6.01,0.631
+M11_0177.6s,far penalty box: on goal line,5.32,0.166
+M11_0177.6s,far penalty box: front corner,2.97,0.134
+M11_0177.6s,far 6-yard box: on goal line,4.44,0.198
+M11_0177.6s,far 6-yard box: front corner,1.62,0.149
+M11_0177.6s,near 6-yard box: front corner,1.41,0.038
+M11_0177.6s,near 6-yard box: on goal line,6.3,0.124
+M11_0177.6s,near penalty box: front corner,3.37,0.085
+M11_0177.6s,D arc meets box edge: far,2.12,0.055
+M11_0177.6s,D arc meets box edge: near,2.31,0.075
+M11_0177.6s,halfway meets far touchline,5.28,0.43
+M11_0177.6s,centre circle meets halfway: far,2.89,0.269
+M11_0218.3s,halfway meets far touchline,0.24,0.025
+M11_0218.3s,centre circle meets halfway: far,0.9,0.076
+M11_0218.3s,centre spot,1.64,0.097
+M11_0218.3s,centre circle meets halfway: near,22.1,0.97
+M11_0289.7s,far corner,7.51,0.263
+M11_0289.7s,far penalty box: front corner,4.32,0.171
+M11_0289.7s,D arc meets box edge: far,2.52,0.16
+M11_0289.7s,halfway meets far touchline,0.33,0.022
+M11_0289.7s,centre circle meets halfway: far,3.05,0.257
+M11_0289.7s,centre spot,0.62,0.034
+M11_0289.7s,centre circle meets halfway: near,2.67,0.05
+M11_0328.4s,far penalty box: front corner,4.08,0.305
+M11_0328.4s,D arc meets box edge: far,10.25,0.27
+M11_0328.4s,halfway meets far touchline,1.26,0.277
+M11_0328.4s,centre circle meets halfway: far,2.72,0.245
+M11_0328.4s,centre spot,2.04,0.171
+M11_0328.4s,centre circle meets halfway: near,2.3,0.133
+M11_0369.8s,far corner,6.83,0.605
+M11_0369.8s,far penalty box: on goal line,6.61,0.215
+M11_0369.8s,far penalty box: front corner,3.87,0.343
+M11_0369.8s,far 6-yard box: on goal line,3.6,0.101
+M11_0369.8s,far 6-yard box: front corner,5.01,0.236
+M11_0369.8s,near penalty box: front corner,4.54,0.09
+M11_0369.8s,D arc meets box edge: far,0.83,0.038
+M11_0369.8s,D arc meets box edge: near,1.35,0.056
+M11_0369.8s,halfway meets far touchline,1.02,0.117
+M11_0369.8s,centre circle meets halfway: far,2.68,0.258
+M11_0369.8s,centre spot,3.09,0.22
+M11_0369.8s,centre circle meets halfway: near,1.3,0.048
+M12_0051.8s,far penalty box: front corner,3.02,0.086
+M12_0051.8s,halfway meets far touchline,1.64,0.294
+M12_0051.8s,centre circle meets halfway: far,2.09,0.168
+M12_0051.8s,centre spot,1.84,0.095
+M12_0051.8s,centre circle meets halfway: near,2.0,0.038
+M12_0136.0s,far corner,3.86,0.241
+M12_0136.0s,far penalty box: on goal line,5.5,0.194
+M12_0136.0s,far penalty box: front corner,3.13,0.29
+M12_0136.0s,far 6-yard box: on goal line,4.4,0.138
+M12_0136.0s,far 6-yard box: front corner,1.45,0.147
+M12_0136.0s,near 6-yard box: front corner,1.61,0.062
+M12_0136.0s,near 6-yard box: on goal line,5.36,0.105
+M12_0136.0s,near penalty box: front corner,2.07,0.037
+M12_0136.0s,near penalty box: on goal line,2.97,0.068
+M12_0136.0s,D arc meets box edge: far,4.68,0.298
+M12_0136.0s,D arc meets box edge: near,2.3,0.058
+M12_0167.1s,far corner,5.5,0.249
+M12_0167.1s,far penalty box: on goal line,3.05,0.118
+M12_0167.1s,far penalty box: front corner,2.58,0.226
+M12_0167.1s,far 6-yard box: on goal line,1.55,0.085
+M12_0167.1s,far 6-yard box: front corner,2.94,0.108
+M12_0167.1s,near 6-yard box: front corner,1.77,0.024
+M12_0167.1s,near 6-yard box: on goal line,2.09,0.049
+M12_0167.1s,D arc meets box edge: far,3.13,0.112
+M12_0167.1s,D arc meets box edge: near,3.89,0.059
+M12_0207.2s,halfway meets far touchline,2.34,0.504
+M12_0207.2s,centre circle meets halfway: far,1.16,0.124
+M12_0207.2s,centre spot,3.16,0.253
+M12_0207.2s,centre circle meets halfway: near,2.6,0.138
+M12_0271.6s,far penalty box: on goal line,8.93,0.28
+M12_0271.6s,far penalty box: front corner,1.34,0.194
+M12_0271.6s,far 6-yard box: on goal line,5.74,0.239
+M12_0271.6s,far 6-yard box: front corner,2.3,0.114
+M12_0271.6s,near penalty box: front corner,4.1,0.094
+M12_0271.6s,D arc meets box edge: far,0.7,0.073
+M12_0271.6s,D arc meets box edge: near,5.01,0.102
+M12_0271.6s,halfway meets far touchline,3.83,0.549
+M12_0271.6s,centre circle meets halfway: far,2.39,0.26
+M12_0271.6s,centre spot,2.32,0.197
+M12_0271.6s,centre circle meets halfway: near,2.31,0.087
+M12_0294.5s,far corner,10.06,0.485
+M12_0294.5s,far penalty box: on goal line,14.43,0.546
+M12_0294.5s,far penalty box: front corner,2.67,0.488
+M12_0294.5s,far 6-yard box: front corner,1.73,0.235
+M12_0294.5s,D arc meets box edge: far,3.44,0.138
+M12_0294.5s,D arc meets box edge: near,5.93,0.136
+M12_0294.5s,halfway meets far touchline,2.12,0.447
+M12_0294.5s,centre circle meets halfway: far,1.84,0.233
+M12_0294.5s,centre spot,0.98,0.063
+M12_0294.5s,centre circle meets halfway: near,0.81,0.056
+M12_0360.4s,far corner,0.93,0.09
+M12_0360.4s,far penalty box: on goal line,2.14,0.266
+M12_0360.4s,far penalty box: front corner,2.37,0.24
+M12_0360.4s,far 6-yard box: on goal line,2.81,0.217
+M12_0360.4s,far 6-yard box: front corner,4.57,0.335
+M12_0360.4s,near 6-yard box: front corner,2.18,0.036
+M12_0360.4s,near 6-yard box: on goal line,3.98,0.063
+M12_0360.4s,D arc meets box edge: far,3.78,0.228
+M12_0360.4s,D arc meets box edge: near,2.36,0.049
+M12_0404.1s,far corner,5.46,0.307
+M12_0404.1s,far penalty box: on goal line,5.06,0.148
+M12_0404.1s,far penalty box: front corner,1.33,0.054
+M12_0404.1s,far 6-yard box: on goal line,3.84,0.174
+M12_0404.1s,far 6-yard box: front corner,2.2,0.136
+M12_0404.1s,near 6-yard box: front corner,2.6,0.039
+M12_0404.1s,near 6-yard box: on goal line,3.16,0.057
+M12_0404.1s,D arc meets box edge: far,4.08,0.13
+M12_0404.1s,D arc meets box edge: near,2.37,0.077
